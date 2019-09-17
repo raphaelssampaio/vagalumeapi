@@ -18,6 +18,7 @@ import {
   CommonText,
   Button,
   ButtonText,
+  Border,
 } from './styles';
 import {logo} from '../../assets';
 
@@ -25,6 +26,7 @@ import {
   GET_SONGS_RANK,
   GET_ARTISTS_RANK,
   GET_ALBUNS_RANK,
+  SEARCH_TERM,
 } from '../../constants/api';
 import api from '../../services/api';
 
@@ -32,6 +34,8 @@ export default function Main() {
   const [songs, setSongs] = useState([]);
   const [artists, setArtists] = useState([]);
   const [albuns, setAlbuns] = useState([]);
+  const [search, setSearch] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -122,6 +126,36 @@ export default function Main() {
     );
   }
 
+  function renderSearch(item) {
+    const base_url = 'https://www.vagalume.com.br';
+    return (
+      <CommonContainer>
+        <Border>
+          <NameAndPosition>{item.title}</NameAndPosition>
+          <TextContainer>
+            <CommonText>Artist: {item.band}</CommonText>
+          </TextContainer>
+          <Button>
+            <ButtonText onPress={() => Linking.openURL(base_url + item.url)}>
+              Open on Vagalume
+            </ButtonText>
+          </Button>
+        </Border>
+      </CommonContainer>
+    );
+  }
+
+  async function handleSubmit(text) {
+    if (text !== '') {
+      const {data: searchData} = await api.get(SEARCH_TERM(text));
+      const sData = searchData.response.docs;
+      setSearch(sData);
+      setIsSearching(false);
+    } else {
+      setIsSearching(false);
+    }
+  }
+
   return (
     <>
       <Container>
@@ -129,41 +163,59 @@ export default function Main() {
           <Logo source={logo} />
         </ImageContainer>
         <InputContainer>
-          <SearchInput />
+          <SearchInput
+            onSubmitEditing={event => handleSubmit(event.nativeEvent.text)}
+            onFocus={() => setIsSearching(true)}
+          />
         </InputContainer>
       </Container>
-      <ContentContainer>
-        <RankingText>Ranking Songs</RankingText>
-        <Card>
-          <FlatList
-            data={songs}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={item => String(item.id)}
-            renderItem={({item, index}) => renderSongs(item, index)}
-          />
-        </Card>
-        <RankingText>Ranking Artists</RankingText>
-        <Card>
-          <FlatList
-            data={artists}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={item => String(item.id)}
-            renderItem={({item, index}) => renderArtist(item, index)}
-          />
-        </Card>
-        <RankingText>Ranking Albuns</RankingText>
-        <Card>
-          <FlatList
-            data={albuns}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={item => String(item.id)}
-            renderItem={({item, index}) => renderAlbuns(item, index)}
-          />
-        </Card>
-      </ContentContainer>
+      {!isSearching && search.length === 0 && (
+        <ContentContainer>
+          <>
+            <RankingText>Ranking Songs</RankingText>
+            <Card>
+              <FlatList
+                data={songs}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => String(item.id)}
+                renderItem={({item, index}) => renderSongs(item, index)}
+              />
+            </Card>
+            <RankingText>Ranking Artists</RankingText>
+            <Card>
+              <FlatList
+                data={artists}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => String(item.id)}
+                renderItem={({item, index}) => renderArtist(item, index)}
+              />
+            </Card>
+            <RankingText>Ranking Albuns</RankingText>
+            <Card>
+              <FlatList
+                data={albuns}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={item => String(item.id)}
+                renderItem={({item, index}) => renderAlbuns(item, index)}
+              />
+            </Card>
+          </>
+        </ContentContainer>
+      )}
+      {!isSearching && search.length !== 0 && (
+        <ContentContainer>
+          <Card>
+            <FlatList
+              data={search}
+              keyExtractor={item => String(item.id)}
+              renderItem={({item}) => renderSearch(item)}
+            />
+          </Card>
+        </ContentContainer>
+      )}
     </>
   );
 }

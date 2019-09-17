@@ -24,7 +24,7 @@ export const InputContainer = styled.View`
 `;
 
 export const SearchInput = styled.TextInput.attrs({
-  placeholder: 'Search...',
+  placeholder: 'Search song...',
   placeholderTextColor: 'white',
   underlineColorAndroid: 'transparent',
 })`
@@ -94,4 +94,10 @@ export const ButtonText = styled.Text`
   font-size: 16px;
   font-weight: bold;
   color: white;
+`;
+
+export const Border = styled.View`
+  flex: 1;
+  border-width: 1px;
+  padding: 5px;
 `;
