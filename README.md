@@ -4,6 +4,8 @@ I can search for a song and see the lyrics in App itself using Vagalume API.
 ### (ENG) This is a non-profit App
 ### (POR) Este App não tem fins lucrativos
 
+### [Version 2.0 in progress using typescript](https://github.com/raphaelssampaio/vagalume-ts)
+
 # Prints
 <img src="https://user-images.githubusercontent.com/19293727/65071326-f01e8600-d964-11e9-8e70-4517fb0e10e3.png" alt="app image1" width="270" height="500">
 
